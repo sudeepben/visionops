@@ -1,0 +1,51 @@
+{
+  "name": "baseline",
+  "weights": "runs/baseline/weights/best.pt",
+  "split": "test",
+  "names": [
+    "missing_hole",
+    "mouse_bite",
+    "open_circuit",
+    "short",
+    "spur",
+    "spurious_copper"
+  ],
+  "ultralytics": {
+    "map50": 0.6007571306883794,
+    "map50_95": 0.24928105945630738,
+    "precision": 0.5429413505867892,
+    "recall": 0.5779124827664871,
+    "speed_ms_per_image": {
+      "preprocess": 3.612752689639487,
+      "inference": 11.196573120942439,
+      "loss": 0.023447310111375266,
+      "postprocess": 2.618725805903875
+    }
+  },
+  "operating_point": {
+    "conf_thr": 0.25,
+    "iou_thr": 0.5,
+    "tp": 127,
+    "fp": 31,
+    "fn": 269,
+    "precision": 0.8037974683544303,
+    "recall": 0.3207070707070707,
+    "f1": 0.45848375451263534
+  },
+  "counts": {
+    "images": 93,
+    "gt_boxes": 396,
+    "images_fully_correct": 3,
+    "fp_by_subtype": {
+      "duplicate": 23,
+      "localization": 7,
+      "class_confusion": 1
+    },
+    "fn_by_subtype": {
+      "below_threshold": 239,
+      "missed": 30
+    },
+    "low_confidence_tp": 123,
+    "annotation_suspicions": {}
+  }
+}

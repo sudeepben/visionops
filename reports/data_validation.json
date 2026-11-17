@@ -1,0 +1,84 @@
+{
+  "names": [
+    "missing_hole",
+    "mouse_bite",
+    "open_circuit",
+    "short",
+    "spur",
+    "spurious_copper"
+  ],
+  "num_classes": 6,
+  "splits": {
+    "train": {
+      "images": 1620,
+      "missing_label_files": 0,
+      "empty_label_files": 0,
+      "unreadable_images": 0,
+      "instances": 6889,
+      "class_instances": {
+        "missing_hole": 971,
+        "mouse_bite": 1058,
+        "open_circuit": 1185,
+        "short": 1236,
+        "spur": 1260,
+        "spurious_copper": 1179
+      },
+      "issues": {},
+      "image_sizes": {
+        "640x640": 1620
+      },
+      "issue_examples": []
+    },
+    "val": {
+      "images": 180,
+      "missing_label_files": 0,
+      "empty_label_files": 0,
+      "unreadable_images": 0,
+      "instances": 774,
+      "class_instances": {
+        "missing_hole": 123,
+        "mouse_bite": 123,
+        "open_circuit": 120,
+        "short": 114,
+        "spur": 108,
+        "spurious_copper": 186
+      },
+      "issues": {},
+      "image_sizes": {
+        "640x640": 180
+      },
+      "issue_examples": []
+    },
+    "test": {
+      "images": 93,
+      "missing_label_files": 0,
+      "empty_label_files": 0,
+      "unreadable_images": 0,
+      "instances": 396,
+      "class_instances": {
+        "missing_hole": 132,
+        "mouse_bite": 97,
+        "open_circuit": 46,
+        "short": 41,
+        "spur": 32,
+        "spurious_copper": 48
+      },
+      "issues": {},
+      "image_sizes": {
+        "640x640": 93
+      },
+      "issue_examples": []
+    }
+  },
+  "fatal": [],
+  "warnings": [],
+  "duplicates": {
+    "exact_duplicate_groups": 0,
+    "cross_split_exact_duplicates": 0,
+    "examples": []
+  },
+  "leakage": {
+    "source_groups_in_multiple_splits": 0,
+    "examples": {}
+  }
+}

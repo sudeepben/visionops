@@ -1,0 +1,33 @@
+# secrets
+.env
+
+# environments
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# data, weights, run artefacts (large / reproducible)
+data/
+runs/
+models/
+mlruns/
+mlflow.db
+logs/
+*.pt
+*.onnx
+*.engine
+*.cache
+
+# large or personal report files (summaries, metrics and plots ARE committed)
+reports/**/predictions.csv
+reports/**/ground_truth.csv
+reports/review/train_*.csv
+reports/review/decisions.csv
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

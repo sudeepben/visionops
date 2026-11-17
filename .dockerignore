@@ -1,0 +1,9 @@
+.venv
+data
+runs
+mlruns
+logs
+reports
+.env
+.git
+**/__pycache__

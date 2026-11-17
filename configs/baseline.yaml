@@ -1,0 +1,24 @@
+# Baseline fine-tuning config. All experiment variants reuse this file so that the
+# ONLY difference between baseline / curated / random-control runs is the train list.
+name: baseline
+model: yolo11n.pt          # small COCO-pretrained detector, auto-downloaded by Ultralytics
+data: data/pcb/dataset.yaml
+epochs: 50
+imgsz: 640                 # PCB defects are small; 960/1024 may help if you have the VRAM/time
+batch: 16                  # uses ~2.3 GB VRAM at 640px; lower to 8 if you hit CUDA out-of-memory
+seed: 42
+deterministic: true        # cuDNN still has some non-deterministic kernels; expect small run-to-run variance
+patience: 20
+workers: 1                 # higher values ran out of system RAM on an 8-16 GB Windows PC (each worker is a process)
+device: null               # null = auto (GPU 0 if available, else CPU)
+extra_train_args:          # passed straight through to ultralytics model.train()
+  cos_lr: false
+  close_mosaic: 10
+
+eval:
+  conf_map: 0.001          # low threshold for mAP computation (standard practice)
+  conf_operating: 0.25     # operating point for failure analysis / sample-level metrics
+  iou_match: 0.5
+  low_conf: 0.5
+  high_conf: 0.7
+  pred_floor: 0.01         # predictions kept down to this conf to explain false negatives
