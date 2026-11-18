@@ -6,8 +6,24 @@ splits) through [3LC's Ultralytics integration](https://docs.3lc.ai/3lc/latest/u
 edit in the 3LC Dashboard. The VisionOps failure analysis can then be compared with what 3LC
 surfaces.
 
-**Status:** the scripts are written. Results and findings will be added here after the run.
-Nothing in this section has been run yet.
+**Status:** run completed (3lc 3.4.2, Ultralytics 8.4.189, RTX 2060, 50 epochs, seed 42).
+
+| Model | Ultralytics | Test mAP@50 | Test mAP@50-95 |
+|---|---|---|---|
+| VisionOps baseline (`runs/baseline`) | 8.3.253 | 0.601 | 0.249 |
+| 3LC run (`baseline-3lc`) | 8.4.189 | 0.583 | 0.205 |
+
+These are **not** a like-for-like comparison. The integration installs a newer Ultralytics with
+different training defaults, and each model is a single seed. 3LC is used here to *explore* the
+data and errors, not as a competing model.
+
+Findings from the dashboard (screenshots in `docs/images/3lc_*.png`):
+- **Per-class F1 vs. confidence** (built-in *F1 (per class)* workflow): F1 peaks at low
+  confidence thresholds (about 0.2–0.3) and drops sharply above about 0.5. This independently
+  matches VisionOps' finding that the model is under-confident.
+- **Find duplicates** workflow: embedding-similar training images form clusters of up to 51
+  images, far more than Roboflow's 3 augmented copies per photo. Many photos appear to share board
+  layouts. VisionOps splits by source photo; a split by board is the stricter next test.
 
 ## Steps (Windows)
 

@@ -111,9 +111,23 @@ Single seed per variant: differences of this size may be run-to-run noise.
 
 ## 3LC integration
 
-`integrations/threelc/` trains the same baseline through 3LC's Ultralytics integration, so
-per-sample metrics and embeddings can be explored in the 3LC Dashboard. It uses a separate
-virtual environment. See [integrations/threelc/README.md](integrations/threelc/README.md).
+`integrations/threelc/` retrains the baseline through 3LC's Ultralytics integration on the same
+splits, so per-sample metrics and image embeddings can be explored in the 3LC Dashboard. It uses
+a separate virtual environment. Details, commands and caveats are in
+[integrations/threelc/README.md](integrations/threelc/README.md).
+
+What the 3LC view added:
+- **The same under-confidence pattern from an independent tool.** 3LC's per-class F1 vs.
+  confidence chart peaks at low thresholds (about 0.2–0.3) and collapses above about 0.5, which
+  matches what VisionOps' own matching found.
+- **Near-duplicate clusters in the training data.** The *Find duplicates* workflow grouped
+  embedding-similar images into clusters of up to 51 images. That's far more than Roboflow's 3
+  augmented copies per photo, which suggests many photos share the same board layouts. VisionOps
+  already splits by source photo; splitting by **board** would be a stricter test of
+  generalisation and is the next experiment I'd run.
+
+![3LC per-class F1](docs/images/3lc_f1.png)
+![3LC duplicate clusters](docs/images/3lc_duplicates.png)
 
 ## Architecture
 
