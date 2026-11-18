@@ -64,10 +64,16 @@ Low-confidence true positives: 123. High-confidence disagreements flagged for la
 1620 training images have at least one review signal; 22 include a possible annotation issue. These are review priorities, not confirmed label errors.
 
 ### Curation experiment (same untouched test set)
-Not run yet.
+| run | epochs | train_images | removed_images | test_map50 | test_map50_95 | op_f1 |
+|---|---|---|---|---|---|---|
+| baseline | 50 | 1620 | 0 | 0.601 | 0.249 | 0.458 |
+| curated | 50 | 1566 | 54 | 0.602 | 0.250 | 0.509 |
+| random_control | 50 | 1566 | 54 | 0.589 | 0.249 | 0.449 |
+
+Single seed per variant: differences of this size may be run-to-run noise.
 
 ### ONNX export consistency
-Not run yet.
+27 test images with detections, PyTorch vs ONNX Runtime on CPU, conf 0.25: 60 of 60 boxes matched (IoU>=0.5, same class), mean IoU 1.000, max |conf diff| 0.000.
 <!-- RESULTS:END -->
 
 ## Limitations and risks

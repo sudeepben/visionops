@@ -59,17 +59,20 @@ def main(argv=None) -> None:
 
     from ultralytics import YOLO
 
-    onnx_path = Path(YOLO(a.weights).export(format="onnx", imgsz=cfg["imgsz"], dynamic=False, simplify=False))
+    # Export and compare both backends on CPU: same device, so differences come from the format only.
+    onnx_path = Path(YOLO(a.weights).export(format="onnx", imgsz=cfg["imgsz"], dynamic=False, simplify=False,
+                                            device="cpu"))
     images = read_split("test")[: a.n]
-    pt, ox = Detector(a.weights, cfg["imgsz"]), Detector(onnx_path, cfg["imgsz"])
+    pt = Detector(a.weights, cfg["imgsz"], device="cpu")
+    ox = Detector(onnx_path, cfg["imgsz"], device="cpu")
     pt.predict_paths(images[:2], conf=a.conf)  # warm-up
     ox.predict_paths(images[:2], conf=a.conf)
     t0 = time.perf_counter(); p = pt.predict_paths(images, conf=a.conf); t_pt = time.perf_counter() - t0
     t0 = time.perf_counter(); o = ox.predict_paths(images, conf=a.conf); t_ox = time.perf_counter() - t0
     rep = compare_predictions(p, o)
-    rep.update({"onnx_path": str(onnx_path), "conf": a.conf, "imgsz": cfg["imgsz"],
+    rep.update({"images_compared": len(images), "onnx_path": str(onnx_path), "conf": a.conf, "imgsz": cfg["imgsz"],
                 "pytorch_s_per_image": t_pt / max(len(images), 1), "onnx_s_per_image": t_ox / max(len(images), 1),
-                "timing_note": "wall-clock on this machine incl. image loading; PyTorch may run on GPU, ONNX Runtime on CPU"})
+                "timing_note": "wall-clock on this machine incl. image loading; both backends on CPU"})
     out = REPORTS_DIR / "onnx_consistency.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(rep, indent=2), encoding="utf-8")

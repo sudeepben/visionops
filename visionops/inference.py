@@ -27,6 +27,12 @@ class Detector:
         self.imgsz = imgsz
         self.device = device
         self.model = YOLO(self.weights, task="detect")
+        if self.weights.lower().endswith(".onnx") and self.device is None:
+            self.device = "cpu"  # onnxruntime CPU build
+        if self.device is not None:
+            # Exported models only learn their class names once a predictor exists. Warm up on the
+            # requested device first, otherwise Ultralytics probes the default GPU (fails on some setups).
+            self.model.predict(np.zeros((imgsz, imgsz, 3), dtype=np.uint8), device=self.device, verbose=False)
         names = self.model.names
         self.names = [names[i] for i in sorted(names)] if isinstance(names, dict) else list(names)
 
@@ -43,6 +49,8 @@ class Detector:
     def predict_paths(self, paths: list[Path], conf: float = 0.01, iou: float = 0.7, chunk: int = 32) -> pd.DataFrame:
         rows = []
         paths = [str(p) for p in paths]
+        if self.weights.lower().endswith(".onnx"):
+            chunk = 1  # exported with a static batch size of 1
         for i in range(0, len(paths), chunk):
             batch = paths[i:i + chunk]
             for path, r in zip(batch, self.model.predict(batch, stream=True, **self._kw(conf, iou))):

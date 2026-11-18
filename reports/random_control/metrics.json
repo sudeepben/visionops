@@ -1,0 +1,51 @@
+{
+  "name": "random_control",
+  "weights": "D:\\project\\VisionOps\\runs\\random_control\\weights\\best.pt",
+  "split": "test",
+  "names": [
+    "missing_hole",
+    "mouse_bite",
+    "open_circuit",
+    "short",
+    "spur",
+    "spurious_copper"
+  ],
+  "ultralytics": {
+    "map50": 0.5889640214761174,
+    "map50_95": 0.24866718749353942,
+    "precision": 0.5204334840135584,
+    "recall": 0.6070210585471666,
+    "speed_ms_per_image": {
+      "preprocess": 6.555912904791855,
+      "inference": 15.715876342578522,
+      "loss": 0.001524730275074641,
+      "postprocess": 4.582750539655888
+    }
+  },
+  "operating_point": {
+    "conf_thr": 0.25,
+    "iou_thr": 0.5,
+    "tp": 122,
+    "fp": 26,
+    "fn": 274,
+    "precision": 0.8243243243243243,
+    "recall": 0.30808080808080807,
+    "f1": 0.4485294117647058
+  },
+  "counts": {
+    "images": 93,
+    "gt_boxes": 396,
+    "images_fully_correct": 2,
+    "fp_by_subtype": {
+      "duplicate": 20,
+      "localization": 6
+    },
+    "fn_by_subtype": {
+      "below_threshold": 248,
+      "missed": 25,
+      "poor_localization": 1
+    },
+    "low_confidence_tp": 119,
+    "annotation_suspicions": {}
+  }
+}

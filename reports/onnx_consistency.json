@@ -1,0 +1,16 @@
+{
+  "images": 27,
+  "boxes_pytorch": 60,
+  "boxes_onnx": 60,
+  "matched_boxes": 60,
+  "match_rate": 1.0,
+  "mean_iou_matched": 0.9999991289537608,
+  "max_abs_conf_diff": 9.5367431640625e-07,
+  "images_with_same_box_count": 27,
+  "onnx_path": "runs\\baseline\\weights\\best.onnx",
+  "conf": 0.25,
+  "imgsz": 640,
+  "pytorch_s_per_image": 0.07758889199933038,
+  "onnx_s_per_image": 0.05948835600167513,
+  "timing_note": "wall-clock on this machine incl. image loading; both backends on CPU"
+}

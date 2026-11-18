@@ -102,7 +102,9 @@ def build() -> str:
     ox = _load(REPORTS_DIR / "onnx_consistency.json")
     out += ["", "### ONNX export consistency"]
     if ox:
-        out.append(f"{ox['images']} test images, conf {ox['conf']}: {ox['matched_boxes']} of "
+        n = f"{ox['images_compared']} test images ({ox['images']} with detections)" if "images_compared" in ox \
+            else f"{ox['images']} test images with detections"
+        out.append(f"{n}, PyTorch vs ONNX Runtime on CPU, conf {ox['conf']}: {ox['matched_boxes']} of "
                    f"{max(ox['boxes_pytorch'], ox['boxes_onnx'])} boxes matched (IoU>=0.5, same class), "
                    f"mean IoU {_f(ox['mean_iou_matched'])}, max |conf diff| {_f(ox['max_abs_conf_diff'])}.")
     else:

@@ -58,11 +58,36 @@ Low-confidence true positives: 123. High-confidence disagreements flagged for la
 1620 training images have at least one review signal; 22 include a possible annotation issue. These are review priorities, not confirmed label errors.
 
 ### Curation experiment (same untouched test set)
-Not run yet.
+| run | epochs | train_images | removed_images | test_map50 | test_map50_95 | op_f1 |
+|---|---|---|---|---|---|---|
+| baseline | 50 | 1620 | 0 | 0.601 | 0.249 | 0.458 |
+| curated | 50 | 1566 | 54 | 0.602 | 0.250 | 0.509 |
+| random_control | 50 | 1566 | 54 | 0.589 | 0.249 | 0.449 |
+
+Single seed per variant: differences of this size may be run-to-run noise.
 
 ### ONNX export consistency
-Not run yet.
+27 test images with detections, PyTorch vs ONNX Runtime on CPU, conf 0.25: 60 of 60 boxes matched (IoU>=0.5, same class), mean IoU 1.000, max |conf diff| 0.000.
 <!-- RESULTS:END -->
+
+### Key findings (from the runs above)
+
+- **The model finds most defects but is under-confident.** The baseline reaches mAP@50 0.601 on the
+  test set. At a fixed confidence cutoff of 0.25, though, it misses 269 of 396 defects. For 239 of
+  those, a correct-class box with IoU ≥ 0.5 exists below the cutoff; only 30 are missed entirely.
+  The useful next step is choosing the cutoff on the validation set, not adding capacity.
+- **False positives are mostly duplicates.** 23 of 31 are a second box on an already-detected
+  defect, which points to NMS/IoU settings rather than background confusion.
+- **The hardest classes are thin, small structures.** spur (mAP@50 0.48) and mouse_bite (0.51)
+  score lowest. The dataset's images are 640×640 downscales of much larger board photos, so these
+  defects are only a few pixels wide.
+- **No high-confidence label disagreements were found.** The model never contradicted a label at
+  conf ≥ 0.7, so the review queue's "possible annotation issue" flags (22 images) come only from
+  box-geometry outliers.
+- **Curation made no measurable difference.** Removing the 54 flagged images gave mAP@50-95
+  0.250, compared with 0.249 for the baseline and 0.249 for removing 54 random images. With one
+  seed per variant, this is a null result. That's expected when the flags come from geometry
+  outliers rather than confirmed label errors, and it's the reason the random control exists.
 
 ## Architecture
 
@@ -165,6 +190,22 @@ Docker (CPU, API only; weights mounted at runtime):
 | Experiments | Baseline vs curated vs random control on the same test set |
 
 Each tab tells you which command to run if its input files don't exist yet.
+
+## Data splits
+
+The Roboflow export (v1) contains these splits:
+- **train:** 1800 images, made from 600 source photos with 3 augmented copies each.
+- **valid:** 62 original images.
+- **test:** 31 original images.
+
+The provided test split has no `spur` or `spurious_copper` boxes, so it can't measure 2 of the
+6 classes. `prepare --merge-val-into-test` handles this:
+- The provided **valid + test** (93 un-augmented originals) become the held-out **test** set.
+- **Validation** is carved from train with a fixed seed, **grouped by source photo**, so no
+  augmented copy of a validation photo stays in train.
+
+The test set is never used for training, early stopping, flagging or curation. Exact counts are
+in `reports/data_validation.json`.
 
 ## How errors are defined
 
