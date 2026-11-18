@@ -3,18 +3,19 @@
 
 # environments
 .venv/
+.venv-3lc/
 venv/
 __pycache__/
 *.pyc
 .pytest_cache/
 
 # data, weights, run artefacts (large / reproducible)
-data/
-runs/
-models/
-mlruns/
+/data/
+/runs/
+/models/
+/mlruns/
 mlflow.db
-logs/
+/logs/
 *.pt
 *.onnx
 *.engine

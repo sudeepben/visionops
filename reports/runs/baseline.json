@@ -1,0 +1,41 @@
+{
+  "name": "baseline",
+  "model": "yolo11n.pt",
+  "data": "D:\\project\\VisionOps\\data\\pcb\\dataset.yaml",
+  "train_args": {
+    "data": "D:\\project\\VisionOps\\data\\pcb\\dataset.yaml",
+    "epochs": 50,
+    "imgsz": 640,
+    "batch": 16,
+    "seed": 42,
+    "deterministic": true,
+    "patience": 20,
+    "workers": 1,
+    "project": "D:\\project\\VisionOps\\runs",
+    "name": "baseline",
+    "exist_ok": true,
+    "plots": true,
+    "verbose": true,
+    "cos_lr": false,
+    "close_mosaic": 10
+  },
+  "save_dir": "D:\\project\\VisionOps\\runs\\baseline",
+  "best_weights": "D:\\project\\VisionOps\\runs\\baseline\\weights\\best.pt",
+  "train_minutes": 28.87,
+  "val_metrics_best_epoch": {
+    "metrics/precision(B)": 0.3557831609546149,
+    "metrics/recall(B)": 0.46658246718290614,
+    "metrics/mAP50(B)": 0.37933891271903236,
+    "metrics/mAP50-95(B)": 0.13180772474427457,
+    "fitness": 0.13180772474427457
+  },
+  "git_commit": null,
+  "env": {
+    "python": "3.13.7",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "torch": "2.11.0+cu128",
+    "cuda_available": true,
+    "gpu": "NVIDIA GeForce RTX 2060",
+    "ultralytics": "8.3.253"
+  }
+}

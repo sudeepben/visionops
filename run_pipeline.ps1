@@ -25,6 +25,7 @@ $Status = Join-Path $PSScriptRoot "logs\status.txt"
 $env:PYTHONUNBUFFERED = "1"
 $env:PYTHONIOENCODING = "utf-8"
 $env:PYTHONUTF8 = "1"
+$env:PIN_MEMORY = "False"   # pinned host memory ran out on a low-RAM PC
 
 function Write-Status($msg) {
     $line = "$(Get-Date -Format s) $msg"
@@ -129,6 +130,10 @@ if (-not (Test-Path "reports\baseline\metrics.json")) {
     Invoke-Native "evaluate baseline on test" $Py @("-m", "visionops.evaluate", "--weights", "runs/baseline/weights/best.pt", "--name", "baseline")
 }
 
+if (-not (Test-Path "reports\threshold\threshold.json")) {
+    Invoke-Native "tune confidence threshold on validation" $Py @("-m", "visionops.threshold", "--weights", "runs/baseline/weights/best.pt", "--name", "baseline")
+}
+
 # ---------- 6. Review queue ----------
 if (-not (Test-Path "reports\review\review_queue.csv")) {
     Invoke-Native "rank training samples for review" $Py @("-m", "visionops.review", "--weights", "runs/baseline/weights/best.pt")
@@ -148,6 +153,7 @@ if (-not $SkipOnnx -and -not (Test-Path "reports\onnx_consistency.json")) {
 }
 
 # ---------- 9. Results ----------
+Invoke-Native "render README figures" $Py @("-m", "visionops.figures")
 Invoke-Native "build results report" $Py @("-m", "visionops.report")
 Write-Status "PIPELINE COMPLETE"
 Write-Host "`nDashboard:  .\.venv\Scripts\streamlit run app\dashboard.py" -ForegroundColor Green

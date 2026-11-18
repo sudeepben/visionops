@@ -60,6 +60,14 @@ Test images: 93 (3 with no FP/FN at the operating point), GT boxes: 396.
 False positives by type: {'duplicate': 23, 'localization': 7, 'class_confusion': 1}. False negatives by type: {'below_threshold': 239, 'missed': 30}.
 Low-confidence true positives: 123. High-confidence disagreements flagged for label review: 0.
 
+### Operating threshold (chosen on validation, reported on test)
+| threshold | TP | FP | FN | precision | recall | F1 |
+|---|---|---|---|---|---|---|
+| default 0.25 | 127 | 31 | 269 | 0.804 | 0.321 | 0.458 |
+| tuned 0.15 | 271 | 336 | 125 | 0.446 | 0.684 | 0.540 |
+
+Threshold 0.15 maximised F1 on the validation split; the test split was not used to choose it.
+
 ### Review queue (training set)
 1620 training images have at least one review signal; 22 include a possible annotation issue. These are review priorities, not confirmed label errors.
 

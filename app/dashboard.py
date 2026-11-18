@@ -93,7 +93,12 @@ with tab_inf:
     else:
         c1, c2, c3 = st.columns([3, 1, 1])
         w = c1.selectbox("Model", weights, format_func=lambda p: str(p.relative_to(ROOT)) if p.is_relative_to(ROOT) else str(p))
-        conf = c2.slider("Confidence", 0.05, 0.95, 0.25, 0.05)
+        th_file = REPORTS_DIR / "threshold" / "threshold.json"
+        default_conf = 0.25
+        if th_file.exists():
+            default_conf = float(json.loads(th_file.read_text(encoding="utf-8"))["tuned_conf"])
+        conf = c2.slider("Confidence", 0.01, 0.95, default_conf, 0.01,
+                         help="Defaults to the threshold tuned on the validation split, if available")
         imgsz = c3.selectbox("Image size", [640, 960, 1280], index=0)
         up = st.file_uploader("Upload a PCB image", type=["jpg", "jpeg", "png", "bmp"])
         if up is not None:

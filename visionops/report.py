@@ -79,6 +79,19 @@ def build() -> str:
     else:
         out.append("Not run yet.")
 
+    th = _load(REPORTS_DIR / "threshold" / "threshold.json")
+    out += ["", "### Operating threshold (chosen on validation, reported on test)"]
+    if th:
+        rows = []
+        for label, key in ((f"default {th['default_conf']}", "test_at_default"), (f"tuned {th['tuned_conf']}", "test_at_tuned")):
+            d = th[key]
+            rows.append({"threshold": label, "TP": int(d["tp"]), "FP": int(d["fp"]), "FN": int(d["fn"]),
+                         "precision": d["precision"], "recall": d["recall"], "F1": d["f1"]})
+        out.append(_table(pd.DataFrame(rows)))
+        out.append(f"\nThreshold {th['tuned_conf']} maximised F1 on the validation split; the test split was not used to choose it.")
+    else:
+        out.append("Not run yet.")
+
     q = _load(REPORTS_DIR / "review" / "review_queue.csv")
     out += ["", "### Review queue (training set)"]
     if q is not None:

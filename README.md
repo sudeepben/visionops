@@ -1,5 +1,7 @@
 # VisionOps: PCB defect inspection and model improvement
 
+[![tests](https://github.com/sudeepben/visionops/actions/workflows/tests.yml/badge.svg)](https://github.com/sudeepben/visionops/actions/workflows/tests.yml)
+
 VisionOps fine-tunes a small pretrained YOLO detector to find defects on printed circuit
 boards. It then measures where the model fails and uses that to decide which training data a
 human should review. A controlled experiment tests whether curating the flagged data helps.
@@ -54,6 +56,14 @@ Test images: 93 (3 with no FP/FN at the operating point), GT boxes: 396.
 False positives by type: {'duplicate': 23, 'localization': 7, 'class_confusion': 1}. False negatives by type: {'below_threshold': 239, 'missed': 30}.
 Low-confidence true positives: 123. High-confidence disagreements flagged for label review: 0.
 
+### Operating threshold (chosen on validation, reported on test)
+| threshold | TP | FP | FN | precision | recall | F1 |
+|---|---|---|---|---|---|---|
+| default 0.25 | 127 | 31 | 269 | 0.804 | 0.321 | 0.458 |
+| tuned 0.15 | 271 | 336 | 125 | 0.446 | 0.684 | 0.540 |
+
+Threshold 0.15 maximised F1 on the validation split; the test split was not used to choose it.
+
 ### Review queue (training set)
 1620 training images have at least one review signal; 22 include a possible annotation issue. These are review priorities, not confirmed label errors.
 
@@ -72,10 +82,20 @@ Single seed per variant: differences of this size may be run-to-run noise.
 
 ### Key findings (from the runs above)
 
-- **The model finds most defects but is under-confident.** The baseline reaches mAP@50 0.601 on the
-  test set. At a fixed confidence cutoff of 0.25, though, it misses 269 of 396 defects. For 239 of
-  those, a correct-class box with IoU ≥ 0.5 exists below the cutoff; only 30 are missed entirely.
-  The useful next step is choosing the cutoff on the validation set, not adding capacity.
+![Per-class mAP@50](docs/images/per_class_map50.png)
+
+![Failure examples](docs/images/failure_examples.png)
+
+![Threshold sweep](docs/images/threshold_f1.png)
+
+- **The model finds most defects but is under-confident, and re-tuning the threshold fixes much of it.**
+  The baseline reaches mAP@50 0.601 on the test set. At the default confidence cutoff of 0.25,
+  though, it misses 269 of 396 defects. For 239 of those, a correct-class box with IoU ≥ 0.5
+  exists below the cutoff; only 30 are missed entirely. Choosing the cutoff on the validation
+  split (max F1 → 0.15) raises test F1 from 0.458 to 0.540 and recall from 0.32 to 0.68.
+  The cost is precision, which drops from 0.80 to 0.45 (31 → 336 false positives). For
+  inspection, missing a defect usually costs more than a false alarm a human dismisses. The
+  right cutoff is a business decision, so the full trade-off curve is reported.
 - **False positives are mostly duplicates.** 23 of 31 are a second box on an already-detected
   defect, which points to NMS/IoU settings rather than background confusion.
 - **The hardest classes are thin, small structures.** spur (mAP@50 0.48) and mouse_bite (0.51)
@@ -88,6 +108,12 @@ Single seed per variant: differences of this size may be run-to-run noise.
   0.250, compared with 0.249 for the baseline and 0.249 for removing 54 random images. With one
   seed per variant, this is a null result. That's expected when the flags come from geometry
   outliers rather than confirmed label errors, and it's the reason the random control exists.
+
+## 3LC integration
+
+`integrations/threelc/` trains the same baseline through 3LC's Ultralytics integration, so
+per-sample metrics and embeddings can be explored in the 3LC Dashboard. It uses a separate
+virtual environment. See [integrations/threelc/README.md](integrations/threelc/README.md).
 
 ## Architecture
 
@@ -155,7 +181,9 @@ python -m visionops.review   --weights runs/baseline/weights/best.pt
 
 python -m visionops.experiment build --frac 0.05      # or --source reviews (uses dashboard decisions)
 python -m visionops.experiment run                    # add --seeds 42 43 44 for a fairer comparison
+python -m visionops.threshold --weights runs/baseline/weights/best.pt   # pick conf threshold on val, report on test
 python -m visionops.export_onnx --weights runs/baseline/weights/best.pt
+python -m visionops.figures                           # README figures from reports/
 python -m visionops.report                            # updates README / model card results
 
 streamlit run app/dashboard.py
@@ -266,6 +294,7 @@ configs/          training/eval config
 tests/            pytest suite (core logic runs without torch/GPU)
 docs/             architecture + model card
 reports/          generated metrics, analyses and plots (committed); large CSVs ignored
+integrations/     3LC Dashboard integration (separate venv)
 run_pipeline.ps1  one-command Windows pipeline
 ```
 

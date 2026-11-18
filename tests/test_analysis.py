@@ -53,3 +53,21 @@ def test_geometry_outliers_flags_extreme_box():
     out = geometry_outliers(gt)
     assert "b.jpg" in set(out["image"])
     assert "a.jpg" not in set(out["image"])
+
+
+def test_threshold_sweep_picks_best_f1(tmp_path):
+    from visionops.matching import MatchConfig
+    from visionops.threshold import best_threshold, sweep
+
+    imgs = _dataset(tmp_path)
+    gt = load_ground_truth(imgs, 2)
+    preds = pd.DataFrame([
+        [str(imgs[0]), 0, 0.15, 90, 40, 110, 60],     # correct but low confidence
+        [str(imgs[2]), 0, 0.12, 90, 40, 110, 60],     # correct but low confidence
+        [str(imgs[1]), 1, 0.11, 40, 15, 60, 35],      # correct but low confidence
+        [str(imgs[0]), 0, 0.05, 150, 10, 170, 30],    # very low-confidence false positive
+    ], columns=["image", "cls", "conf", "x1", "y1", "x2", "y2"])
+    df = sweep(preds, gt, [0.02, 0.1, 0.25], MatchConfig(), ["a", "b"])
+    assert list(df["conf_thr"]) == [0.02, 0.1, 0.25]
+    assert best_threshold(df) == 0.1           # keeps the 3 TPs, drops the 0.05 FP
+    assert df.set_index("conf_thr").loc[0.25, "tp"] == 0

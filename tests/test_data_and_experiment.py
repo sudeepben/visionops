@@ -99,3 +99,18 @@ def test_merge_val_into_test(roboflow_export):
     groups = {s: {source_group(p) for p in read_split(s)} for s in ("train", "val", "test")}
     assert not groups["train"] & groups["val"] and not groups["train"] & groups["test"]
     assert all("valid" in str(p) or "test" in str(p) for p in read_split("test"))
+
+
+def test_materialize_matches_split_lists(roboflow_export, tmp_path):
+    import yaml
+
+    from visionops.data.materialize import materialize
+
+    prepare(roboflow_export, DATASET_DIR, seed=42)
+    y = materialize(tmp_path / "dirs")
+    cfg = yaml.safe_load(open(y))
+    for split in ("train", "val", "test"):
+        imgs = sorted(p.name for p in (tmp_path / "dirs" / split / "images").iterdir())
+        assert imgs == sorted(p.name for p in read_split(split))
+        assert len(list((tmp_path / "dirs" / split / "labels").iterdir())) == len(imgs)
+    assert cfg["test"] == "test/images" and len(cfg["names"]) == 2

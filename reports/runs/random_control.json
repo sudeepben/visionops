@@ -1,0 +1,41 @@
+{
+  "name": "random_control",
+  "model": "yolo11n.pt",
+  "data": "D:\\project\\VisionOps\\data\\pcb\\experiments\\random_control\\dataset.yaml",
+  "train_args": {
+    "data": "D:\\project\\VisionOps\\data\\pcb\\experiments\\random_control\\dataset.yaml",
+    "epochs": 50,
+    "imgsz": 640,
+    "batch": 16,
+    "seed": 42,
+    "deterministic": true,
+    "patience": 20,
+    "workers": 1,
+    "project": "D:\\project\\VisionOps\\runs",
+    "name": "random_control",
+    "exist_ok": true,
+    "plots": true,
+    "verbose": true,
+    "cos_lr": false,
+    "close_mosaic": 10
+  },
+  "save_dir": "D:\\project\\VisionOps\\runs\\random_control",
+  "best_weights": "D:\\project\\VisionOps\\runs\\random_control\\weights\\best.pt",
+  "train_minutes": 26.58,
+  "val_metrics_best_epoch": {
+    "metrics/precision(B)": 0.3506887567115941,
+    "metrics/recall(B)": 0.39165823024726204,
+    "metrics/mAP50(B)": 0.3361852568394002,
+    "metrics/mAP50-95(B)": 0.11006663326106554,
+    "fitness": 0.11006663326106554
+  },
+  "git_commit": "b50ae18",
+  "env": {
+    "python": "3.13.7",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "torch": "2.11.0+cu128",
+    "cuda_available": true,
+    "gpu": "NVIDIA GeForce RTX 2060",
+    "ultralytics": "8.3.253"
+  }
+}
